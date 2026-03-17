@@ -442,15 +442,15 @@ void fact_big_integers(BigInteger *bigint) {
     }
 }
 
-
-/*Divides the whole BigInteger in place by divisor, returns the remainder, goes from most to least significant carrying the remainder into each block*/
-uint64_t bigint_divmod_inplace(BigInteger *num, uint64_t divisor) {
+/*Divides the BigInteger by the divisor (this changes the original BigInteger)
+  Returns the remainder of the division*/
+uint64_t div_big_integer(BigInteger *bigint, uint64_t divisor) {
     uint64_t remainder = 0;
 
-    BigInteger_Block *block = num->most_significant;
+    BigInteger_Block *block = bigint->most_significant;
     while (block != NULL) {
         uint64_t new_block_val;
-        remainder = divmod128_by10(remainder, block->integer, &new_block_val);
+        remainder = divmod128(divisor, remainder, block->integer, &new_block_val);
         block->integer = new_block_val;
         block = block->less_significance;
     }
@@ -458,8 +458,24 @@ uint64_t bigint_divmod_inplace(BigInteger *num, uint64_t divisor) {
     return remainder;
 }
 
-/*Multiply entire BigInteger by 10 and add a single digit in one pass*/
-static void bigint_mul10_add(BigInteger *bigint, uint64_t digit) {
+/*Returns the modulus of the BigInteger
+  Does not affect the BigInteger's value*/
+uint64_t mod_big_integer(BigInteger *bigint, uint64_t divisor) {
+    uint64_t remainder = 0;
+
+    BigInteger_Block *block = bigint->most_significant;
+    while (block != NULL) {
+        uint64_t new_block_val; //unused since original bigint shouldn't change
+        remainder = divmod128(divisor, remainder, block->integer, &new_block_val);
+        block = block->less_significance;
+    }
+
+    return remainder;
+}
+
+/*Multiply entire BigInteger by 10 and add a single digit in one pass
+  Used for the definition of BigIntegers, see 'string' and 'scientific' to bigint*/
+void bigint_mul10_add(BigInteger *bigint, uint64_t digit) {
     uint64_t carry = digit;
 
     BigInteger_Block *block = bigint->least_significant;
@@ -509,7 +525,7 @@ char* bigint_to_string(BigInteger* bigint) {
         buf[len++] = '0';
     } else {
         while (!bigint_is_zero(deep_copy)) {
-            uint64_t digit = bigint_divmod_inplace(deep_copy, 10);
+            uint64_t digit = div_big_integer(deep_copy, 10);
             buf[len++] = '0' + (char)digit;
         }
     }

@@ -42,6 +42,9 @@ void mul_big_integers(BigInteger *resultint, BigInteger *multiplierint);
 void exp_big_integer(BigInteger *bigint, uint64_t exp);
 void fact_big_integers(BigInteger *bigint);
 
+uint64_t div_big_integer(BigInteger *bigint, uint64_t divisor);
+uint64_t mod_big_integer(BigInteger *bigint, uint64_t divisor);
+
 char* bigint_to_string(BigInteger* bigint);
 BigInteger* string_to_bigint(const char *str);
 BigInteger* scientific_to_bigint(uint64_t mantissa, uint64_t exponent);

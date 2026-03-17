@@ -2,20 +2,20 @@
 #include <stdint.h>
 
 /*Divide a 128 bit number by 10, returns remainder and writes quotient as out_quotient_lo*/
-uint64_t divmod128_by10(uint64_t hi, uint64_t lo, uint64_t *out_quotient_lo) {
-  uint64_t q_hi = hi / 10;
-  uint64_t r_hi = hi % 10;
+uint64_t divmod128(uint64_t divisor, uint64_t hi, uint64_t lo, uint64_t *out_quotient_lo) {
+  uint64_t q_hi = hi / divisor;
+  uint64_t r_hi = hi % divisor;
 
   uint64_t lo_hi = lo >> 32;
   uint64_t lo_lo = lo & 0xFFFFFFFF;
 
   uint64_t mid = (r_hi << 32) | lo_hi;
-  uint64_t q_mid = mid / 10;
-  uint64_t r_mid = mid % 10;
+  uint64_t q_mid = mid / divisor;
+  uint64_t r_mid = mid % divisor;
 
   uint64_t low = (r_mid << 32) | lo_lo;
-  uint64_t q_low = low / 10;
-  uint64_t r_low = low % 10;
+  uint64_t q_low = low / divisor;
+  uint64_t r_low = low % divisor;
 
   *out_quotient_lo = (q_mid << 32) | q_low;
 

@@ -6,6 +6,8 @@ A maths library in C focused on absurdly large numbers and the ability to calcul
 This library is currently in development with goals of adding more/better operations to the current BigInteger type as well as developing a large floating point number type.  
 Feel free to find/fix problems, optimise and add operations/functions to allow for more uses of these big numbers!
 
+For more information about the library view DOCUMENTATION.md
+
 Big Data Types (structs)
 ------------------------
 

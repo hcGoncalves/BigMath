@@ -11,6 +11,8 @@ Integer blocks are appended and removed as needed by the provided methods howeve
 There should be no leading zeros at any time in a BigInteger (unless a block is defined outside of the provided methods).
 
 ## Methods
+
+### Defining and Removing BigIntegers
   
 >### BigInteger\* define_big_integer(short sign, unsigned int size, uint64_t\* arr)
 >Defines the BigInteger's initial value through the given array.  
@@ -29,7 +31,7 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
 >Frees the memory taken by every block linked to the BigInteger as well as the BigInteger itself.  
 >Make sure to run this procedure for any BigInteger created to avoid memory leaks.
   
-<br>  
+### Appending and Removing BigInteger Blocks
   
 >### void append_most_significant(BigInteger *bigint, uint64_t integer)  
 >Appends a 64 bit integer block to the most significant part of the BigInteger.
@@ -43,7 +45,7 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
 >### void remove_least_significant(BigInteger *bigint)
 >Removes and frees the memory taken by the least significant integer block of the BigInteger (given that it has one).
   
-<br>  
+### Bitwise and Comparison BigInteger Operations
   
 >### int big_integer_compare(BigInteger *greaterint, BigInteger *lesserint)  
 >Used to compare two BigInteger's magnitude.
@@ -60,7 +62,7 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
 > - Returns 0 if the BigInteger is non-zero
 > - Returns 1 if the BigInteger is zero
 
-<br>  
+### Standard BigInteger Operations (add, sub, mul, div)
   
 >### void add_big_integers(BigInteger *resultint, BigInteger *addingint)
 >Adds two BigIntegers where the 'resultint' BigInteger becomes the sum of the two original BigIntegers.  
@@ -92,8 +94,16 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
 >### void fact_big_integers(BigInteger *bigint)
 >Calculates the factorial ($n*(n-1)*(n-2)*...*2*1$) of the 'bigint' BigInteger.  
 >The 'bigint' BigInteger becomes the result of the factorial.
+
+>### uint64_t div_big_integer(BigInteger *bigint, uint64_t divisor)
+>Divides the BigInteger by the divisor (changes the original BigInteger)
+>Returns the remainder from the division.
+
+>### uint64_t mod_big_integer(BigInteger *bigint, uint64_t divisor)
+>Returns the modulus (remainder) of the BigInteger from the divisor given.
+>Does not change the original BigInteger.
   
-<br>  
+### BigInteger Output Operations
   
 >### char* bigint_to_string(BigInteger* bigint)
 >Allocates a char buffer of the BigInteger (normally used for displaying the number).  
