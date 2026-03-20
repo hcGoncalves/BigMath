@@ -1,0 +1,16 @@
+20/03/2026
+
+Additions:
+Added BigFunctions.c and .h which will be used for non standard (+, -, *, /) operations on BigIntegers.
+Added divisor to divmod128 to allow for division by any given uint64_t.
+Added exp_big_integers which allows a BigInteger to be exponented to another BigInteger.
+Added bigint_num_digits which returns the amount of digits required to represent the BigInteger.
+
+Modifications:
+Renamed IntegerOperations to BlockOperation to better reflect the code's purpose.
+Added new methods to the DOCUMENTATION as appropriate.
+Added the new BigFunctions file as a seperate section in the DOCUMENTATION.
+Added deep_copy_big_integer to BigInteger.h since it used by BigFunctions and may be useful for other external uses.
+
+Fixes:
+Freed deepcopy "count" on fact_big_integers and "mul_val" in exp_big_integer, avoiding memory leak.

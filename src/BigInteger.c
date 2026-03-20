@@ -242,6 +242,8 @@ void add_big_integer(BigInteger *resultint, uint64_t addingint) {
     BigInteger_Block* resultint_block = resultint->least_significant;
 
     for (unsigned int i = 0; i < resultint->size; i++) {
+        if (i!=0 && carry == 0) {break;}
+        
         uint64_t result = carry;
         carry = 0;
 
@@ -251,8 +253,6 @@ void add_big_integer(BigInteger *resultint, uint64_t addingint) {
             if (result < addingint) { //number wrap
                 carry = 1;
             }
-        } else if (carry == 0) {
-            break;
         }
 
         if (resultint->size > i) {
@@ -416,7 +416,7 @@ void mul_big_integers(BigInteger *resultint, BigInteger *multiplierint) {
     remove_big_integer(temp);
 }
 
-/*Calculates the value of the BigInteger to the exp (bigint^exp)*/
+/*Calculates the value of the BigInteger to the exponential given (bigint^exp)*/
 void exp_big_integer(BigInteger *bigint, uint64_t exp) {
     if (exp==0) {
         zero_big_integer(bigint);
@@ -427,18 +427,28 @@ void exp_big_integer(BigInteger *bigint, uint64_t exp) {
         while (exp-- > 1) {
             mul_big_integers(bigint, mul_val);
         }
+
+        remove_big_integer(mul_val);
     }
 }
 
-/*Returns the value of bigint! (in place)*/
-void fact_big_integers(BigInteger *bigint) {
-    BigInteger *count = deep_copy_big_integer(bigint);
-    count->sign = 0;
-    sub_big_integer(count, 1);
-
-    while (count->size != 0) {
-        mul_big_integers(bigint, count);
+/*Calculates the value of the BigInteger to the BigInteger exponential given*/
+void exp_big_integers(BigInteger *bigint, BigInteger *expint) {
+    if (expint->size==0) {
+        zero_big_integer(bigint);
+        append_most_significant(bigint, 1);
+    } else if (!(expint->size == 1 && expint->least_significant->integer == 1)) {
+        BigInteger *mul_val = deep_copy_big_integer(bigint);
+        BigInteger *count = deep_copy_big_integer(expint); //Avoid changing expint
         sub_big_integer(count, 1);
+
+        while (count->size != 0) {
+            mul_big_integers(bigint, mul_val);
+            sub_big_integer(count, 1);
+        }
+
+        remove_big_integer(mul_val);
+        remove_big_integer(count);
     }
 }
 
@@ -581,4 +591,22 @@ BigInteger* scientific_to_bigint(uint64_t mantissa, uint64_t exponent) {
     }
 
     return result;
+}
+
+/*Returns the number of digits in the BigInteger (base 10)*/
+uint64_t bigint_num_digits(BigInteger *bigint) {
+    BigInteger *deep_copy = deep_copy_big_integer(bigint);
+
+    size_t length = 0;
+
+    if (!bigint_is_zero(deep_copy)) {
+        while (!bigint_is_zero(deep_copy)) {
+            uint64_t digit = div_big_integer(deep_copy, 10);
+            length++;
+        }
+    }
+
+    remove_big_integer(deep_copy);
+
+    return length;
 }

@@ -1,7 +1,8 @@
-#include "IntegerOperations.h"
+#include "BlockOperations.h"
 #include <stdint.h>
+#include <math.h>
 
-/*Divide a 128 bit number by 10, returns remainder and writes quotient as out_quotient_lo*/
+/*Divide a 128 bit number, returns remainder and writes quotient as out_quotient_lo*/
 uint64_t divmod128(uint64_t divisor, uint64_t hi, uint64_t lo, uint64_t *out_quotient_lo) {
   uint64_t q_hi = hi / divisor;
   uint64_t r_hi = hi % divisor;

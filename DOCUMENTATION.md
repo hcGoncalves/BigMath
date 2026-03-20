@@ -45,7 +45,7 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
 >### void remove_least_significant(BigInteger *bigint)
 >Removes and frees the memory taken by the least significant integer block of the BigInteger (given that it has one).
   
-### Bitwise and Comparison BigInteger Operations
+### Miscellaneous BigInteger Operations
   
 >### int big_integer_compare(BigInteger *greaterint, BigInteger *lesserint)  
 >Used to compare two BigInteger's magnitude.
@@ -61,6 +61,10 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
 >Used to check if the BigInteger's magnitude is zero.
 > - Returns 0 if the BigInteger is non-zero
 > - Returns 1 if the BigInteger is zero
+
+>### BigInteger *deep_copy_big_integer(BigInteger *bigint)
+>Returns a new BigInteger with new Integer Blocks that are equal to the BigInteger that was passed in.
+>'bigint' is unaffected by this operation.
 
 ### Standard BigInteger Operations (add, sub, mul, div)
   
@@ -91,9 +95,10 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
 >Multiplies the 'bitint' BigInteger 'exp' times by it's original self (exponentiation).  
 >The 'bigint' BigInteger becomes the result of the exponentiation.
 
->### void fact_big_integers(BigInteger *bigint)
->Calculates the factorial ($n*(n-1)*(n-2)*...*2*1$) of the 'bigint' BigInteger.  
->The 'bigint' BigInteger becomes the result of the factorial.
+>### void exp_big_integers(BigInteger *bigint, BigInteger *expint)
+>Multiplies the 'bitint' BigInteger 'expint' times by it's original self (exponentiation).  
+>The 'bigint' BigInteger becomes the result of the exponentiation.
+>'expint' is unchanged by the operation.
 
 >### uint64_t div_big_integer(BigInteger *bigint, uint64_t divisor)
 >Divides the BigInteger by the divisor (changes the original BigInteger)
@@ -108,3 +113,15 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
 >### char* bigint_to_string(BigInteger* bigint)
 >Allocates a char buffer of the BigInteger (normally used for displaying the number).  
 >**The caller is responsible for freeing the char buffer after it is used**
+
+>### uint64_t bigint_num_digits(BigInteger* bigint)
+>Returns a uint64_t for the minimum number of digits required to represent the BigInteger in base 10.
+>'bigint' is unchanged by this operation.
+
+
+# BigFunctions
+A collection of methods for processing BigIntegers.
+
+>### void fact_big_integers(BigInteger *bigint)
+>Calculates the factorial ($n*(n-1)*(n-2)*...*2*1$) of the 'bigint' BigInteger.  
+>The 'bigint' BigInteger becomes the result of the factorial.

@@ -33,6 +33,7 @@ void remove_least_significant(BigInteger *bigint);
 int big_integer_compare(BigInteger *greaterint, BigInteger *lesserint);
 void zero_big_integer(BigInteger *bigint);
 int bigint_is_zero(BigInteger *bigint);
+BigInteger *deep_copy_big_integer(BigInteger *bigint);
 
 void add_big_integers(BigInteger *resultint, BigInteger *addingint);
 void add_big_integer(BigInteger *resultint, uint64_t addingint);
@@ -40,10 +41,12 @@ void sub_big_integers(BigInteger *resultint, BigInteger *subtractingint);
 void sub_big_integer(BigInteger *resultint, uint64_t subint);
 void mul_big_integers(BigInteger *resultint, BigInteger *multiplierint);
 void exp_big_integer(BigInteger *bigint, uint64_t exp);
-void fact_big_integers(BigInteger *bigint);
+void exp_big_integers(BigInteger *bigint, BigInteger *expint);
 
 uint64_t div_big_integer(BigInteger *bigint, uint64_t divisor);
 uint64_t mod_big_integer(BigInteger *bigint, uint64_t divisor);
+
+uint64_t bigint_num_digits(BigInteger* bigint);
 
 char* bigint_to_string(BigInteger* bigint);
 BigInteger* string_to_bigint(const char *str);
