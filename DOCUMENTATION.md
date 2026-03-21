@@ -5,8 +5,8 @@ Theoretical Range: $-2^{2^{64}}\le n\le 2^{2^{64}}$
 Minimum Memory Allocation: 21 Bytes  
 Memory Allocation as integer $n$ increases: $21+16\lfloor 1+\log_{2^{64}} n\rfloor$ Bytes  
 
-The value of the integer is stored in as a linked list where 'blocks' of 64 bits are joined together to emulate a larger integer.  
-Each 64 bit block has pointers to move to higher or lower significance. The main BigInteger type contains a head and tail pointer (appropriatly named 'most_significant' and 'least_significant'). It also includes the integer's sign and size (number of blocks).  
+The value of the integer is stored in as a linked list where 'blocks' of 64-bits are joined together to emulate a larger integer.  
+Each 64-bit block has pointers to move to higher or lower significance. The main BigInteger type contains a head and tail pointer (appropriatly named 'most_significant' and 'least_significant'). It also includes the integer's sign and size (number of blocks).  
 Integer blocks are appended and removed as needed by the provided methods however you can also manually do this using the 'append' and 'remove' methods provided.  
 There should be no leading zeros at any time in a BigInteger (unless a block is defined outside of the provided methods).
 
@@ -33,16 +33,16 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
   
 ### Appending and Removing BigInteger Blocks
   
->### void append_most_significant(BigInteger *bigint, uint64_t integer)  
->Appends a 64 bit integer block to the most significant part of the BigInteger.
+>### void bigint_append_most_significant(BigInteger *bigint, uint64_t integer)  
+>Appends a 64-bit integer block to the most significant part of the BigInteger.
 
->### void append_least_significant(BigInteger *bigint, uint64_t integer)  
->Appends a 64 bit integer block to the least significant part of the BigInteger.
+>### void bigint_append_least_significant(BigInteger *bigint, uint64_t integer)  
+>Appends a 64-bit integer block to the least significant part of the BigInteger.
 
->### void remove_most_significant(BigInteger *bigint)  
+>### void bigint_remove_most_significant(BigInteger *bigint)  
 >Removes and frees the memory taken by the most significant integer block of the BigInteger (given that it has one).
 
->### void remove_least_significant(BigInteger *bigint)
+>### void bigint_remove_least_significant(BigInteger *bigint)
 >Removes and frees the memory taken by the least significant integer block of the BigInteger (given that it has one).
   
 ### Miscellaneous BigInteger Operations
@@ -55,12 +55,21 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
 
 >### void zero_big_integer(BigInteger *bigint)  
 >Used to zero the given BigInteger.  
->Also frees all of the allocated memory by any block that is currently linked to the BigInteger.
+>Also frees all the allocated memory by any block that is currently linked to the BigInteger.
 
 >### int bigint_is_zero(BigInteger *bigint)  
 >Used to check if the BigInteger's magnitude is zero.
 > - Returns 0 if the BigInteger is non-zero
 > - Returns 1 if the BigInteger is zero
+
+>### void left_shift_big_integer(BigInteger *bigint, uint64_t shift_by)
+>Bitwise left shift by 'shift_by' amount of times.
+>Adds Integer Blocks as necessary to expand the number.
+>Fills the least significant bits with zero.
+
+>### void right_shift_big_integer(BigInteger *bigint, uint64_t shift_by)
+>Bitwise right shift by 'shift_by' amount of times.
+>Removes Integer Blocks as necessary due to bit underflow.
 
 >### BigInteger *deep_copy_big_integer(BigInteger *bigint)
 >Returns a new BigInteger with new Integer Blocks that are equal to the BigInteger that was passed in.
@@ -73,7 +82,7 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
 >The 'addingint' is unchanged after this procedure is called.
 
 >### void add_big_integer(BigInteger *resultint, uint64_t addingint)
->Adds a 64 bit integer to a BigInteger. The 'resultint' becomes the sum of these two integers.
+>Adds a 64-bit integer to a BigInteger. The 'resultint' becomes the sum of these two integers.
 
 >### void sub_big_integers(BigInteger *resultint, BigInteger *subtractingint)
 >Subtracts two BigIntegers where the 'resultint' BigInteger becomes the result of the subtraction.  
@@ -81,8 +90,8 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
 >The sign of the 'resultint' may change depending on the passed BigIntegers.
 
 >### void sub_big_integer(BigInteger *resultint, uint64_t subint)
->Subtracts a 64 bit from a BigInteger. The 'resultint' becomes the result of the subtraction.  
->The sign of the 'resultint' may change depending on the passed BigInteger and 64 bit integer.
+>Subtracts a 64-bit from a BigInteger. The 'resultint' becomes the result of the subtraction.  
+>The sign of the 'resultint' may change depending on the passed BigInteger and 64-bit integer.
 
 >### void mul_big_integers(BigInteger *resultint, BigInteger *multiplierint)
 >Multiplies two BigIntegers where the 'resultint' BigInteger becomes the product of the two original BigIntegers.  
@@ -92,11 +101,11 @@ There should be no leading zeros at any time in a BigInteger (unless a block is 
 >Currently $O(n^2)$ algorithm, planned to be improved to the Karatsuba Algorithm ($O(n^{1.58})$)
 
 >### void exp_big_integer(BigInteger *bigint, uint64_t exp)
->Multiplies the 'bitint' BigInteger 'exp' times by it's original self (exponentiation).  
+>Multiplies the 'bitint' BigInteger 'exp' times by its original self (exponentiation).  
 >The 'bigint' BigInteger becomes the result of the exponentiation.
 
 >### void exp_big_integers(BigInteger *bigint, BigInteger *expint)
->Multiplies the 'bitint' BigInteger 'expint' times by it's original self (exponentiation).  
+>Multiplies the 'bitint' BigInteger 'expint' times by its original self (exponentiation).  
 >The 'bigint' BigInteger becomes the result of the exponentiation.
 >'expint' is unchanged by the operation.
 

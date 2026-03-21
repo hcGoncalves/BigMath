@@ -1,5 +1,5 @@
 #include "BigInteger.h"
-#include "IntegerOperations.h"
+#include "BlockOperations.h"
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -13,7 +13,7 @@ BigInteger* define_big_integer(short sign, unsigned int size, uint64_t* arr) {
     bigint->size = 0;
 
     for (int i = 0; i < size; i++) {
-        append_least_significant(bigint, arr[i]);
+        bigint_append_least_significant(bigint, arr[i]);
     }
 
     bigint->sign = sign;
@@ -25,14 +25,14 @@ BigInteger* define_big_integer(short sign, unsigned int size, uint64_t* arr) {
 /*Frees the memory from the Big Integer*/
 void remove_big_integer(BigInteger *bigint) {
     while (bigint->size > 0) {
-        remove_most_significant(bigint);
+        bigint_remove_most_significant(bigint);
     }
 
     free(bigint);
 }
 
 /*Appends a 64 bit number to the least significant part of the current Big Integer*/
-void append_least_significant(BigInteger* bigint, uint64_t integer) {
+void bigint_append_least_significant(BigInteger* bigint, uint64_t integer) {
     BigInteger_Block* bigint_block = malloc(sizeof(BigInteger_Block));
     bigint_block->integer = integer;
     bigint_block->less_significance = NULL;
@@ -50,7 +50,7 @@ void append_least_significant(BigInteger* bigint, uint64_t integer) {
 }
 
 /*Appens a 64 bit number to the most significant part of the current Big Integer*/
-void append_most_significant(BigInteger* bigint, uint64_t integer) {
+void bigint_append_most_significant(BigInteger* bigint, uint64_t integer) {
     BigInteger_Block* bigint_block = malloc(sizeof(BigInteger_Block));
     bigint_block->integer = integer;
     bigint_block->more_significance = NULL;
@@ -68,7 +68,7 @@ void append_most_significant(BigInteger* bigint, uint64_t integer) {
 }
 
 /*Frees the current most significant part of the Big Integer*/
-void remove_most_significant(BigInteger* bigint) {
+void bigint_remove_most_significant(BigInteger* bigint) {
     if (bigint->size == 0) {return;}
 
     BigInteger_Block* block_to_free = bigint->most_significant;
@@ -86,7 +86,7 @@ void remove_most_significant(BigInteger* bigint) {
 }
 
 /*Frees the current least significant part of the Big Integer*/
-void remove_least_significant(BigInteger* bigint) {
+void bigint_remove_least_significant(BigInteger* bigint) {
     if (bigint->size == 0) {return;}
 
     BigInteger_Block* block_to_free = bigint->least_significant;
@@ -106,7 +106,7 @@ void remove_least_significant(BigInteger* bigint) {
 /*Removes any and all leading zero blocks (where a whole integer block is zero)*/
 void remove_leading_zeros(BigInteger *bigint) {
     while (bigint->size > 0 && bigint->most_significant->integer == 0) {
-        remove_most_significant(bigint);
+        bigint_remove_most_significant(bigint);
     }
 }
 
@@ -115,7 +115,7 @@ void remove_leading_zeros(BigInteger *bigint) {
 /*Zeros out the Big Integer (frees all integer blocks)*/
 void zero_big_integer(BigInteger *bigint) {
     while (bigint->size > 0) {
-        remove_most_significant(bigint);
+        bigint_remove_most_significant(bigint);
     }
 }
 
@@ -151,14 +151,14 @@ void add_at_offset(BigInteger *result, uint64_t value, unsigned int offset) {
 
     for (unsigned int i = 0; i < offset; i++) {
         if (block->more_significance == NULL)
-            append_most_significant(result, 0);
+            bigint_append_most_significant(result, 0);
         block = block->more_significance;
     }
 
     //propagate addition and carry towards more significance.
     while (value > 0) {
         if (block == NULL) {
-            append_most_significant(result, value);
+            bigint_append_most_significant(result, value);
             break;
         }
 
@@ -169,18 +169,73 @@ void add_at_offset(BigInteger *result, uint64_t value, unsigned int offset) {
     }
 }
 
+/*Bitwise left shift of the given bigint by the given amount.
+  Creates new integer blocks as necessary*/
+void left_shift_big_integer(BigInteger *bigint, uint64_t shift_by) {
+    if (bigint->size == 0 || shift_by == 0) return;
+
+    uint64_t new_blocks = shift_by / 64;
+    shift_by %= 64;
+
+    if (shift_by!=0) {
+        uint64_t carry = 0;
+        BigInteger_Block *block = bigint->least_significant;
+
+        while(block!=NULL) {
+            uint64_t temp = block->integer;
+            block->integer = (block->integer << shift_by) | carry;
+            carry = temp >> (64-shift_by);
+
+            block = block->more_significance;
+        }
+
+        if (carry != 0) {
+            bigint_append_most_significant(bigint, carry);
+        }
+    }
+
+    //add extra blocks for each 64 bit shift
+    while (new_blocks-- > 0) bigint_append_least_significant(bigint, 0);
+}
+
+/*Bitwise right shift of the given bigint by the given amount.
+  Removes integer blocks as necessary*/
+void right_shift_big_integer(BigInteger *bigint, uint64_t shift_by) {
+    if (bigint->size == 0 || shift_by == 0) return;
+
+    uint64_t rem_blocks = shift_by / 64;
+    shift_by %= 64;
+
+    while (rem_blocks-- > 0) bigint_remove_least_significant(bigint);
+
+    if (shift_by==0) return;
+
+    uint64_t carry = 0;
+    BigInteger_Block *block = bigint->most_significant;
+
+    while (block!=NULL) {
+        uint64_t temp = block->integer;
+        block->integer = (block->integer >> shift_by) | (carry<<(64-shift_by));
+        carry = temp & ((1 << shift_by)-1);
+
+        block = block->less_significance;
+    }
+}
+
 /*Deep copies a BigInteger (returns the new BigInteger)*/
 BigInteger *deep_copy_big_integer(BigInteger *bigint) {
     BigInteger *new_bigint = define_big_integer(bigint->sign, 0, NULL);
 
     BigInteger_Block *bigint_block = bigint->least_significant;
     for (int i = 0; i < bigint->size; i++) {
-        append_most_significant(new_bigint, bigint_block->integer);
+        bigint_append_most_significant(new_bigint, bigint_block->integer);
         bigint_block = bigint_block->more_significance;
     }
 
     return new_bigint;
 }
+
+
 
 /*Adds two Big Integers together and returns the sum as the first parameter's value
   DOES NOT ignore sign*/
@@ -225,12 +280,12 @@ void add_big_integers(BigInteger *resultint, BigInteger *addingint) {
 
                 resultint_block = resultint_block->more_significance;
             } else {
-                append_most_significant(resultint, result);
+                bigint_append_most_significant(resultint, result);
             }
         }
 
         if (carry) {
-            append_most_significant(resultint, 1);
+            bigint_append_most_significant(resultint, 1);
         }
     }
 }
@@ -266,12 +321,12 @@ void add_big_integer(BigInteger *resultint, uint64_t addingint) {
 
             resultint_block = resultint_block->more_significance;
         } else {
-            append_most_significant(resultint, result);
+            bigint_append_most_significant(resultint, result);
         }
     }
 
     if (carry) {
-        append_most_significant(resultint, 1);
+        bigint_append_most_significant(resultint, 1);
     }
     
 }
@@ -381,7 +436,7 @@ void mul_big_integers(BigInteger *resultint, BigInteger *multiplierint) {
     BigInteger *temp = define_big_integer(0, 0, NULL);
 
     // Seed with a zero block
-    append_most_significant(temp, 0);
+    bigint_append_most_significant(temp, 0);
 
     BigInteger_Block *resultint_block = resultint->least_significant;
 
@@ -420,7 +475,7 @@ void mul_big_integers(BigInteger *resultint, BigInteger *multiplierint) {
 void exp_big_integer(BigInteger *bigint, uint64_t exp) {
     if (exp==0) {
         zero_big_integer(bigint);
-        append_most_significant(bigint, 1);
+        bigint_append_most_significant(bigint, 1);
     } else if (exp != 1) {
         BigInteger *mul_val = deep_copy_big_integer(bigint);
 
@@ -436,7 +491,7 @@ void exp_big_integer(BigInteger *bigint, uint64_t exp) {
 void exp_big_integers(BigInteger *bigint, BigInteger *expint) {
     if (expint->size==0) {
         zero_big_integer(bigint);
-        append_most_significant(bigint, 1);
+        bigint_append_most_significant(bigint, 1);
     } else if (!(expint->size == 1 && expint->least_significant->integer == 1)) {
         BigInteger *mul_val = deep_copy_big_integer(bigint);
         BigInteger *count = deep_copy_big_integer(expint); //Avoid changing expint
@@ -511,7 +566,7 @@ void bigint_mul10_add(BigInteger *bigint, uint64_t digit) {
     }
 
     if (carry > 0) {
-        append_most_significant(bigint, carry);
+        bigint_append_most_significant(bigint, carry);
     }
 }
 
@@ -562,7 +617,7 @@ BigInteger* string_to_bigint(const char *str) {
     if (*str == '-') {result->sign = 1; str++;}
     else if (*str == '+') {str++;}
 
-    append_most_significant(result, 0);
+    bigint_append_most_significant(result, 0);
 
     for (; *str != '\0'; str++) {
         if (*str < '0' || *str > '9') break;
@@ -580,10 +635,10 @@ BigInteger* scientific_to_bigint(uint64_t mantissa, uint64_t exponent) {
     uint64_t hi = mantissa >> 32;
 
     if (hi > 0) {
-        append_most_significant(result, hi);
-        append_least_significant(result, lo);
+        bigint_append_most_significant(result, hi);
+        bigint_append_least_significant(result, lo);
     } else {
-        append_most_significant(result, lo);
+        bigint_append_most_significant(result, lo);
     }
 
     for (uint64_t i = 0; i < exponent; i++) {

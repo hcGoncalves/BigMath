@@ -14,3 +14,17 @@ Added deep_copy_big_integer to BigInteger.h since it used by BigFunctions and ma
 
 Fixes:
 Freed deepcopy "count" on fact_big_integers and "mul_val" in exp_big_integer, avoiding memory leak.
+
+--
+
+21/03/2026
+
+Additions:
+Left and right bit shifts for BigIntegers.
+
+Modifications:
+Added new methods to the DOCUMENTATION as appropriate.
+Changed append and remove BigInteger methods to include 'bigint' in the name. This is to allow for differentiation to BigFloat append and remove methods.
+
+Fixes:
+Fixed include path in BigInteger.c.

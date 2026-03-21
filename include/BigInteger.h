@@ -25,14 +25,16 @@ typedef struct BigInteger {
 BigInteger* define_big_integer(short sign, unsigned int size, uint64_t* arr);
 void remove_big_integer(BigInteger *bigint);
 
-void append_most_significant(BigInteger *bigint, uint64_t integer);
-void append_least_significant(BigInteger *bigint, uint64_t integer);
-void remove_most_significant(BigInteger *bigint);
-void remove_least_significant(BigInteger *bigint);
+void bigint_append_most_significant(BigInteger *bigint, uint64_t integer);
+void bigint_append_least_significant(BigInteger *bigint, uint64_t integer);
+void bigint_remove_most_significant(BigInteger *bigint);
+void bigint_remove_least_significant(BigInteger *bigint);
 
 int big_integer_compare(BigInteger *greaterint, BigInteger *lesserint);
 void zero_big_integer(BigInteger *bigint);
 int bigint_is_zero(BigInteger *bigint);
+void left_shift_big_integer(BigInteger *bigint, uint64_t shift_by);
+void right_shift_big_integer(BigInteger *bigint, uint64_t shift_by);
 BigInteger *deep_copy_big_integer(BigInteger *bigint);
 
 void add_big_integers(BigInteger *resultint, BigInteger *addingint);
