@@ -169,6 +169,21 @@ void add_at_offset(BigInteger *result, uint64_t value, unsigned int offset) {
     }
 }
 
+/*Deep copies a BigInteger (returns the new BigInteger)*/
+BigInteger *deep_copy_big_integer(BigInteger *bigint) {
+    BigInteger *new_bigint = define_big_integer(bigint->sign, 0, NULL);
+
+    BigInteger_Block *bigint_block = bigint->least_significant;
+    for (int i = 0; i < bigint->size; i++) {
+        bigint_append_most_significant(new_bigint, bigint_block->integer);
+        bigint_block = bigint_block->more_significance;
+    }
+
+    return new_bigint;
+}
+
+
+
 /*Bitwise left shift of the given bigint by the given amount.
   Creates new integer blocks as necessary*/
 void left_shift_big_integer(BigInteger *bigint, uint64_t shift_by) {
@@ -222,17 +237,65 @@ void right_shift_big_integer(BigInteger *bigint, uint64_t shift_by) {
     }
 }
 
-/*Deep copies a BigInteger (returns the new BigInteger)*/
-BigInteger *deep_copy_big_integer(BigInteger *bigint) {
-    BigInteger *new_bigint = define_big_integer(bigint->sign, 0, NULL);
+/*Performs a bitwise AND operation on two BigIntegers. The result is the resultint.*/
+void and_big_integers(BigInteger *resultint, BigInteger *addint) {
+    BigInteger_Block *resultint_block = resultint->least_significant;
+    BigInteger_Block *addint_block = addint->least_significant;
 
-    BigInteger_Block *bigint_block = bigint->least_significant;
-    for (int i = 0; i < bigint->size; i++) {
-        bigint_append_most_significant(new_bigint, bigint_block->integer);
-        bigint_block = bigint_block->more_significance;
+    while (resultint_block != NULL && addint_block != NULL) {
+        resultint_block->integer &= addint_block->integer;
+
+        resultint_block = resultint_block->more_significance;
+        addint_block = addint_block->more_significance;
     }
 
-    return new_bigint;
+    //remove leading bits (assume smaller BigIntegers fill leading bits with zeros)
+    if (resultint_block != NULL) {
+        while (resultint->size > addint->size) {
+            bigint_remove_most_significant(resultint);
+        }
+    } else if (addint_block != NULL) {
+        while (addint->size > resultint->size) {
+            bigint_remove_most_significant(addint);
+        }
+    }
+
+    remove_leading_zeros(resultint);
+}
+
+/*Performs a bitwise OR operation on two BigIntegers. The result is the resultint.*/
+void or_big_integers(BigInteger *resultint, BigInteger *orint) {
+    BigInteger_Block *resultint_block = resultint->least_significant;
+    BigInteger_Block *orint_block = orint->least_significant;
+
+    while (resultint_block != NULL && orint_block != NULL) {
+        resultint_block->integer |= orint_block->integer;
+
+        resultint_block = resultint_block->more_significance;
+        orint_block = orint_block->more_significance;
+    }
+
+    if (resultint_block == NULL) {
+        //fill with orint blocks
+        while (orint_block != NULL) {
+            bigint_append_most_significant(resultint, orint_block->integer);
+
+            orint_block = orint_block->more_significance;
+        }
+    }
+}
+
+/*Performs a bitwise NOT operation on the BigInteger. The result is in place.*/
+void not_big_integer(BigInteger *bigint) {
+    BigInteger_Block *block = bigint->least_significant;
+
+    while (block != NULL) {
+        block->integer = ~block->integer;
+
+        block = block->more_significance;
+    }
+
+    remove_leading_zeros(bigint);
 }
 
 

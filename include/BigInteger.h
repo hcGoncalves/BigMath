@@ -33,9 +33,13 @@ void bigint_remove_least_significant(BigInteger *bigint);
 int big_integer_compare(BigInteger *greaterint, BigInteger *lesserint);
 void zero_big_integer(BigInteger *bigint);
 int bigint_is_zero(BigInteger *bigint);
+BigInteger *deep_copy_big_integer(BigInteger *bigint);
+
 void left_shift_big_integer(BigInteger *bigint, uint64_t shift_by);
 void right_shift_big_integer(BigInteger *bigint, uint64_t shift_by);
-BigInteger *deep_copy_big_integer(BigInteger *bigint);
+void and_big_integers(BigInteger *resultint, BigInteger *addint);
+void or_big_integers(BigInteger *resultint, BigInteger *orint);
+void not_big_integer(BigInteger *bigint);
 
 void add_big_integers(BigInteger *resultint, BigInteger *addingint);
 void add_big_integer(BigInteger *resultint, uint64_t addingint);

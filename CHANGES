@@ -28,3 +28,14 @@ Changed append and remove BigInteger methods to include 'bigint' in the name. Th
 
 Fixes:
 Fixed include path in BigInteger.c.
+
+--
+
+26/03/2026
+
+Additions:
+Standard bitwise AND, OR and NOT operations for BigIntegers.
+
+Modifications:
+Added relevant methods to DOCUMENTATION.
+Cleaned up some of the formatting and structuring in the DOCUMENTATION.
